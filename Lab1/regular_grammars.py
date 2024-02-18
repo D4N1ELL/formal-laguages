@@ -1,116 +1,100 @@
-#
-# # Variant 16:
-# VN={S, A, B},
-# VT={a, b, c, d},
-# P={
-#     S → bS
-#     S → dA
-#     A → aA
-#     A → dB
-#     B → cB
-#     A → b
-#     B → a
-# }
-# Get the grammar definition and do the following:
-#
-#     a. Implement a type/class for your grammar;
-#     b. Add one function that would generate 5 valid strings from the language expressed by your given grammar;
-#     c. Implement some functionality that would convert and object of type Grammar to one of type Finite Automaton;
-#     d. For the Finite Automaton, please add a method that checks if an input string can be obtained via the state transition from it;
-
+import random
 
 class Grammar:
-    def __init__(self, VN, VT, P):
-        self.VN = VN
-        self.VT = VT
-        self.P = P
+    def __init__(self):
+        self.Non_Terminal = {'S', 'A', 'B'}
+        self.Terminal = {'a', 'b', 'c', 'd'}
+        self.Production = {
+            'S': ['bS', 'dA'],
+            'A': ['aA', 'dB', 'b'],
+            'B': ['cB', 'a']
+        }
 
-    def generate_valid_strings(self, start_symbol, num_strings):
-        def generate_string(current_string, remaining_length):
-            if remaining_length == 0:
-                return [current_string]
-
-            valid_strings = []
-            for production in self.P:
-                if production[0] == current_string[-1]:
-                    for symbol in production[1:]:
-                        valid_strings.extend(generate_string(current_string + symbol, remaining_length - 1))
-            return valid_strings
-
-        valid_strings = []
-        for production in self.P:
-            if production[0] == start_symbol:
-                for symbol in production[1:]:
-                    valid_strings.extend(generate_string(symbol, num_strings - 1))
-        return valid_strings[:num_strings]
+    def generate_string(self):
+        string = ''
+        current_symbol = 'S'
+        while current_symbol in self.Non_Terminal:
+            production = random.choice(self.Production[current_symbol])
+            for symbol in production:
+                if symbol in self.Terminal:
+                    string += symbol
+                    current_symbol = ''
+                else:
+                    current_symbol = symbol
+                    break
+        return string
 
     def to_finite_automaton(self):
-        states = set()
-        alphabet = self.VT
-        transitions = {}
-        start_state = 'S'
-        accepting_states = set()
-
-        for production in self.P:
-            from_state = production[0]
-            to_state = production[1]
-            states.add(from_state)
-            states.add(to_state)
-            if from_state not in transitions:
-                transitions[from_state] = {}
-            transitions[from_state][to_state] = None
-
-            if len(production) == 2 and production[1] in self.VT:
-                accepting_states.add(to_state)
-
-        return FiniteAutomaton(states, alphabet, transitions, start_state, accepting_states)
+        Q = self.Non_Terminal
+        Sigma = self.Terminal
+        delta = {}
+        for state, productions in self.Production.items():
+            for production in productions:
+                if len(production) == 1:
+                        delta.setdefault(state, {}).setdefault(production, [production])
+                else:
+                    delta.setdefault(state, {}).setdefault(production[0], []).append(production[1:])
+        q0 = 'S'
+        F = [t for production in self.Production for t in self.Production[production] if len(t) == 1 and t.islower()]
+        return FiniteAutomaton(Q, Sigma, delta, q0, F)
 
 
 class FiniteAutomaton:
-    def __init__(self, states, alphabet, transitions, start_state, accepting_states):
-        self.states = states
-        self.alphabet = alphabet
-        self.transitions = transitions
-        self.start_state = start_state
-        self.accepting_states = accepting_states
+    def __init__(self, Q, Sigma, delta, q0, F):
+        self.Q = Q
+        self.Sigma = Sigma
+        self.delta = delta
+        self.q0 = q0
+        self.F = F
 
-    def is_valid_string(self, input_string):
-        current_state = self.start_state
+    def string_belongs_to_language(self, input_string, explicit=False):
+        current_state = self.q0
         for symbol in input_string:
-            if symbol not in self.alphabet:
+            if symbol not in self.Sigma:
+                if explicit:
+                    print("Invalid symbol in input string")
                 return False
-            if current_state not in self.transitions or symbol not in self.transitions[current_state]:
+            if symbol in self.delta.get(current_state, {}):
+                current_state = self.delta[current_state][symbol][0]
+            else:
+                if explicit:
+                    print("Invalid transition")
                 return False
-            current_state = self.transitions[current_state][symbol]
-        return current_state in self.accepting_states
+        return current_state in self.F
 
+    def __str__(self):
+        return f"Q: {self.Q}\nSigma: {self.Sigma}\ndelta: {self.delta}\nq0: {self.q0}\nF: {self.F}"
 
-# Define the grammar
-VN = {'S', 'A', 'B'}
-VT = {'a', 'b', 'c', 'd'}
-P = [
-    'S → bS',
-    'S → dA',
-    'A → aA',
-    'A → dB',
-    'B → cB',
-    'A → b',
-    'B → a'
-]
+grammar = Grammar()
+automaton = grammar.to_finite_automaton()
+print(automaton)
 
-# Create a grammar object
-grammar = Grammar(VN, VT, P)
+for _ in range(10):
+    generated_string = grammar.generate_string()
+    print("\n=======================================")
+    print("Generated string:", generated_string)
+    print("String belongs to language:", automaton.string_belongs_to_language(generated_string))
 
-# Generate 5 valid strings
-valid_strings = grammar.generate_valid_strings('S', 5)
-print("5 Valid Strings:")
-for string in valid_strings:
-    print(string)
+for _ in range(3):
+    generated_string = grammar.generate_string()
+    random_index = random.randint(0, len(generated_string))
+    generated_string = generated_string[:random_index] + 'x' + generated_string[random_index:]
+    print("\n=======================================")
+    print("Generated string:", generated_string)
+    print("String belongs to language:", automaton.string_belongs_to_language(generated_string, True))
 
-# Convert grammar to finite automaton
-finite_automaton = grammar.to_finite_automaton()
+for _ in range(10):
+    random_string = ''.join(random.choices(list(grammar.Terminal), k=10))
+    print("\n=======================================")
+    print("Generated string:", random_string)
+    print("String belongs to language:", automaton.string_belongs_to_language(random_string, True))
 
-# Test if a string is valid in the generated finite automaton
-test_string = 'abdc'
-print(f"Is '{test_string}' a valid string in the finite automaton? {finite_automaton.is_valid_string(test_string)}")
-
+for _ in range(3):
+    generated_string = grammar.generate_string()
+    print("\n=======================================")
+    print("Generated string:", generated_string)
+    random_index = random.randint(0, len(generated_string))
+    print("Removing symbol at index", random_index)
+    generated_string = generated_string[:random_index] + generated_string[random_index + 1:]
+    print("Modified string:", generated_string)
+    print("String belongs to language:", automaton.string_belongs_to_language(generated_string, True))
