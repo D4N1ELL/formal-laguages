@@ -1,10 +1,11 @@
 import random
 
+
 class Grammar:
     def __init__(self):
-        self.Non_Terminal = {'S', 'A', 'B'}
-        self.Terminal = {'a', 'b', 'c', 'd'}
-        self.Production = {
+        self.Non_Terminal = {'S', 'A', 'B'}  # VN
+        self.Terminal = {'a', 'b', 'c', 'd'}  # VT
+        self.Production = {                     # P
             'S': ['bS', 'dA'],
             'A': ['aA', 'dB', 'b'],
             'B': ['cB', 'a']
@@ -31,7 +32,7 @@ class Grammar:
         for state, productions in self.Production.items():
             for production in productions:
                 if len(production) == 1:
-                        delta.setdefault(state, {}).setdefault(production, [production])
+                    delta.setdefault(state, {}).setdefault(production, [production])
                 else:
                     delta.setdefault(state, {}).setdefault(production[0], []).append(production[1:])
         q0 = 'S'
@@ -64,6 +65,7 @@ class FiniteAutomaton:
 
     def __str__(self):
         return f"Q: {self.Q}\nSigma: {self.Sigma}\ndelta: {self.delta}\nq0: {self.q0}\nF: {self.F}"
+
 
 grammar = Grammar()
 automaton = grammar.to_finite_automaton()
