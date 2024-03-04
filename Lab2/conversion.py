@@ -63,11 +63,12 @@ F = ['q3']
 initial = 'q0'
 delta = {
     ('q0', 'a'): 'q1',
-    ('q0', 'b'): 'q1',
+    ('q1', 'b'): 'q1',
     ('q1', 'b'): 'q2',
-    ('q1', 'a'): 'q2',
-    ('q1', 'b'): 'q3',
-    ('q2', 'b'): 'q0',
+    ('q2', 'a'): 'q2',
+    ('q2', 'b'): 'q3',
+    ('q0', 'b'): 'q0'
+
 }
 
 
@@ -134,6 +135,3 @@ sm_graph = sm.draw()
 # Render the graph to a file and view it
 output_path = 'state_machine_variant_16'
 sm_graph.render(output_path, view=True, format='png')
-
-
-
