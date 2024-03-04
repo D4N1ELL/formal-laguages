@@ -1,6 +1,5 @@
 import random
 
-
 class Grammar:
     def __init__(self):
         self.Non_Terminal = {'S', 'A', 'B'}  # VN
@@ -71,7 +70,7 @@ grammar = Grammar()
 automaton = grammar.to_finite_automaton()
 print(automaton)
 
-for _ in range(10):
+for _ in range(5):
     generated_string = grammar.generate_string()
     print("\n=======================================")
     print("Generated string:", generated_string)
@@ -85,7 +84,7 @@ for _ in range(3):
     print("Generated string:", generated_string)
     print("String belongs to language:", automaton.string_belongs_to_language(generated_string, True))
 
-for _ in range(10):
+for _ in range(5):
     random_string = ''.join(random.choices(list(grammar.Terminal), k=10))
     print("\n=======================================")
     print("Generated string:", random_string)
