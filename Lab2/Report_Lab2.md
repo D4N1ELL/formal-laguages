@@ -43,12 +43,18 @@ conversion and what changes have you introduced. In case if you'll be able to wr
 ## Implementation description
 We can resolve this problem by trying to see the graph on paper. First i tried to make a table where we can see clearly 
 which node connects with another and in what case.
+
 ![nfa_blank](https://github.com/D4N1ELL/formal-laguages/assets/47325571/33ed3186-bf6f-429b-a8c1-56db404f89cc)
+
 For a clearer image I also recreated it on the computer:
+
 ![nfa](https://github.com/D4N1ELL/formal-laguages/assets/47325571/8d531fb3-4b95-491b-845c-b009721e0e81)
+
 Then we reconstruct the table using the new states that we created in the first one, such as q1q2 for example. Then we 
 analyze where it repeats and just iterate the same thing over and over until no more new states appear.
+
 ![dfa_blank](https://github.com/D4N1ELL/formal-laguages/assets/47325571/37c08309-c80e-46a1-814b-edf4f6ef934a)
+
 ![dfa](https://github.com/D4N1ELL/formal-laguages/assets/47325571/191302a4-5cfd-480b-b16a-e5943961c5ea)
 
 
