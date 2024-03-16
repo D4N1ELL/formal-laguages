@@ -1,1 +1,27 @@
-print "Hello world"
+//This is a comment pls ignore
+
+
+#include <iostream>
+using namespace std;
+
+def randomFunction(){
+    int fignea = 1;
+    float tojeSamoe
+
+    if fignea > tojeSamoe{
+        cout << "Ciota ne to";
+    }
+}
+
+int main() {
+  cout << "Hello World!";
+
+  /*
+    This is a block of comment so also please ignore
+    ratata
+    more comments
+    dont care noone will read this
+   */
+
+  return 0;
+}
