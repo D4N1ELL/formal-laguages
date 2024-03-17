@@ -2,7 +2,9 @@ class Token:
     Kwd = "Kwd"
     Number = "Number"
     Def = "Def"
+    Extern = "Extern"
     Ident = "Ident"
+    String = "String"
 
 
 class Lexer:
@@ -38,6 +40,9 @@ class Lexer:
         if stream[0] in ['+', '-', '*', '/', '(', ')']:
             return [(Token.Kwd, stream[0])] + self.lex(stream[1:])
 
+        if stream[0] == '"':  # Check for double quotes to handle strings
+            return self.lex_string("", stream[1:])
+
         return [(Token.Kwd, stream[0])] + self.lex(stream[1:])
 
     def lex_number(self, buffer, stream):
@@ -60,8 +65,20 @@ class Lexer:
 
         if buffer == "def":
             return [(Token.Def,)] + self.lex(stream)
+        elif buffer == "extern":
+            return [(Token.Extern,)] + self.lex(stream)
         else:
             return [(Token.Ident, buffer)] + self.lex(stream)
+
+    def lex_string(self, buffer, stream):
+        if not stream:
+            return []  # Incomplete string, return nothing
+
+        if stream[0] == '"':
+            return [(Token.String, buffer)] + self.lex(stream[1:])  # Found end of string, return it as a token
+
+        buffer += stream[0]
+        return self.lex_string(buffer, stream[1:])  # Keep building the string
 
     def lex_block_comment(self, stream):
         if not stream:
@@ -84,4 +101,5 @@ if __name__ == '__main__':
     file = "test.myLang"
     contents = open(file, "r").read()
     tokens = parse(contents)
-    print(tokens)
+    for token in tokens:
+        print(token)

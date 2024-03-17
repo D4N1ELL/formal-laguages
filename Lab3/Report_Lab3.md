@@ -20,13 +20,93 @@
 3. Implement a sample lexer and show how it works.
 
 ----
-## Implementation description
-
-----
 ## Code
+
+1. Token Class: This class defines different types of tokens that can be identified in the code.
+```commandline
+class Token:
+    Kwd = "Kwd"
+    Number = "Number"
+    Def = "Def"
+    Extern = "Extern"
+    Ident = "Ident"
+    String = "String"
+```
+
+2. Lexer Class: This class is responsible for converting a stream of characters into tokens.
+        The lex method is the main entry point. It analyzes each character in the input stream and generates tokens accordingly.
+        It skips whitespace characters, handles comments (both single-line and block comments), identifies keywords and identifiers, and extracts numbers.
+        The methods lex_number, lex_ident, and lex_block_comment handle specific token types.
+
+
+3. Parse Function: This function takes a string input (the code) and initiates the lexer to tokenize it. It returns the list of tokens generated from the input code.
+```commandline
+def parse(stream):
+    lexer = Lexer()
+    tokens = lexer.lex(stream)
+    return tokens
+```
+
+4. Main Block: In the main block, a file named "test.myLang" is opened, its contents are read, and then the parse function is called to tokenize those contents.
+        Finally, the tokens are printed.
+```commandline
+if __name__ == '__main__':
+    file = "test.myLang"
+    contents = open(file, "r").read()
+    tokens = parse(contents)
+    print(tokens)
+```
 
 ----
 ## Results:
+
+```commandline
+('Kwd', '#')
+('Ident', 'include')
+('Kwd', '<')
+('Ident', 'stdio')
+('Kwd', '.')
+('Ident', 'h')
+('Kwd', '>')
+('Def',)
+('Ident', 'randomFunction')
+('Kwd', '(')
+('Kwd', ')')
+('Kwd', '{')
+('Ident', 'int')
+('Ident', 'fignea')
+('Kwd', '=')
+('Number', 1.0)
+('Kwd', ';')
+('Ident', 'float')
+('Ident', 'tojeSamoe')
+('Ident', 'if')
+('Ident', 'fignea')
+('Kwd', '>')
+('Ident', 'tojeSamoe')
+('Kwd', '{')
+('Ident', 'printf')
+('Kwd', '(')
+('String', 'Ciota ne to')
+('Kwd', ')')
+('Kwd', ';')
+('Kwd', '}')
+('Kwd', '}')
+('Ident', 'int')
+('Ident', 'main')
+('Kwd', '(')
+('Kwd', ')')
+('Kwd', '{')
+('Ident', 'printf')
+('Kwd', '(')
+('String', 'Hello World!')
+('Kwd', ')')
+('Kwd', ';')
+('Ident', 'return')
+('Number', 0.0)
+('Kwd', ';')
+('Kwd', '}')
+```
 
 ----
 ## Conclusions

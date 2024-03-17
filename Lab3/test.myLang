@@ -1,20 +1,19 @@
 //This is a comment pls ignore
 
 
-#include <iostream>
-using namespace std;
+#include <stdio.h>
 
 def randomFunction(){
     int fignea = 1;
     float tojeSamoe
 
     if fignea > tojeSamoe{
-        cout << "Ciota ne to";
+        printf("Ciota ne to");
     }
 }
 
 int main() {
-  cout << "Hello World!";
+    printf("Hello World!");
 
   /*
     This is a block of comment so also please ignore
