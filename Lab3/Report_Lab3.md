@@ -33,10 +33,20 @@ class Token:
     String = "String"
 ```
 
-2. Lexer Class: This class is responsible for converting a stream of characters into tokens.
-        The lex method is the main entry point. It analyzes each character in the input stream and generates tokens accordingly.
-        It skips whitespace characters, handles comments (both single-line and block comments), identifies keywords and identifiers, and extracts numbers.
-        The methods lex_number, lex_ident, and lex_block_comment handle specific token types.
+2. Lexer Class: This class is responsible for converting a stream of characters into tokens. The lex method is the main 
+        entry point. It analyzes each character in the input stream and generates tokens accordingly. 
+```commandline
+if stream[0].isalpha():
+    buffer = stream[0]
+    return self.lex_ident(buffer, stream[1:])
+```
+For example this specific function checks for alphabetical characters. `isalpha()` checks if the first character of the 
+stream is alphabetic (a letter). If the first character is alphabetic, it proceeds to the next lines:
+`buffer = stream[0]` Assigns the first character of the stream to the variable buffer. Then it returns `lex_ident` identifiers in the input stream.
+
+
+In the same way work other functions for finding comments `if stream.startswith('//'):` skipping whitespaces `if stream[0] in [' ', '\n', '\r', '\t']:`
+finding strings `if stream[0] == '"'` and extracts numbers `if stream[0].isdigit():`. The methods lex_number, lex_ident, and lex_block_comment handle specific token types.
 
 
 3. Parse Function: This function takes a string input (the code) and initiates the lexer to tokenize it. It returns the list of tokens generated from the input code.
@@ -110,3 +120,11 @@ if __name__ == '__main__':
 
 ----
 ## Conclusions
+
+During this lab I understood what a lexer is and how it works. It essentially is conversion of a text into 
+meaningful lexical tokens belonging to categories defined by a "lexer" class. In case of a natural language, 
+those categories include nouns, verbs, adjectives, punctuations etc. In case of a programming language, the categories 
+include identifiers, operators, grouping symbols and data types. 
+
+I made it so it reads a whole C like document, and it divides each character into a token. It recognizes strings, numbers, 
+individual characters, skips new lines, defined functions, comments and also blocks of comments.
