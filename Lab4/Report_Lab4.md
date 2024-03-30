@@ -6,9 +6,21 @@
 ----
 ## Theory
 
-&ensp;&ensp;&ensp; The term lexer comes from lexical analysis which, in turn, represents the process of extracting lexical tokens from a string of characters. There are several alternative names for the mechanism called lexer, for example tokenizer or scanner. The lexical analysis is one of the first stages used in a compiler/interpreter when dealing with programming, markup or other types of languages.
+&ensp;&ensp;&ensp; Regular expressions (called REs, or regexes, or regex patterns) are essentially a tiny, highly specialized 
+programming language embedded inside Python and made available through the re module. Using this little language, you specify 
+the rules for the set of possible strings that you want to match; this set might contain English sentences, or e-mail addresses, 
+or TeX commands, or anything you like. You can then ask questions such as “Does this string match the pattern?”, or “Is there a 
+match for the pattern anywhere in this string?”. You can also use REs to modify a string or to split it apart in various ways.
 
-&ensp;&ensp;&ensp; The tokens are identified based on some rules of the language and the products that the lexer gives are called lexemes. So basically the lexer is a stream of lexemes. Now in case it is not clear what's the difference between lexemes and tokens, there is a big one. The lexeme is just the byproduct of splitting based on delimiters, for example spaces, but the tokens give names or categories to each lexeme. So the tokens don't retain necessarily the actual value of the lexeme, but rather the type of it and maybe some metadata.
+&ensp;&ensp;&ensp; Regular expression patterns are compiled into a series of bytecodes which are then executed by a matching engine written in C. 
+For advanced use, it may be necessary to pay careful attention to how the engine will execute a given RE, and write the RE in a 
+certain way in order to produce bytecode that runs faster.
+
+&ensp;&ensp;&ensp; The regular expression language is relatively small and restricted, so not all possible string processing tasks can be done 
+using regular expressions. There are also tasks that can be done with regular expressions, but the expressions turn out to 
+be very complicated. In these cases, you may be better off writing Python code to do the processing; while Python code will 
+be slower than an elaborate regular expression, it will also probably be more understandable.
+
 
 ----
 ## Objectives:
@@ -24,8 +36,6 @@
 
     c. **Bonus point**: write a function that will show sequence of processing regular expression (like, what you do first, second and so on)
 
-Write a good report covering all performed actions and faced difficulties.
-
 ## Variant 4:
 
 ![Variant 4](/variant_4_task.png)
@@ -38,110 +48,72 @@ Examples of what must be generated:
 
 ----
 ## Code
+The implementtation consists of a function which takes the given rule and travers it symbol by symbol and checking if it is a special one or no. In this function are covered some base cases, like 1 or more occurrences or a fixed number. Also in each case is printed the step, like how the string which is generated is modified.
 
-1. Token Class: This class defines different types of tokens that can be identified in the code.
-```commandline
-class Token:
-    Kwd = "Kwd"
-    Number = "Number"
-    Def = "Def"
-    Extern = "Extern"
-    Ident = "Ident"
-    String = "String"
+Some examples of covered cases in code are:
+
+1 or more occurrences from options
+```
+        elif rule[i] == "(" and rule[rule.index(")", i) + 1] == "+":
+            times = random.randint(1, 5)
+            for _ in range(times):
+                char =  choice(options(rule[i + 1:rule.index(")", i)]))
+                string +=  char
+                print(f"One or more occurrences from options: Adding {char} to string => {string}")
+            i = rule.index(")", i) + 1
 ```
 
-2. Lexer Class: This class is responsible for converting a stream of characters into tokens. The lex method is the main 
-        entry point. It analyzes each character in the input stream and generates tokens accordingly. 
-```commandline
-if stream[0].isalpha():
-    buffer = stream[0]
-    return self.lex_ident(buffer, stream[1:])
+Fixed occurrences from options
+
 ```
-For example this specific function checks for alphabetical characters. `isalpha()` checks if the first character of the 
-stream is alphabetic (a letter). If the first character is alphabetic, it proceeds to the next lines:
-`buffer = stream[0]` Assigns the first character of the stream to the variable buffer. Then it returns `lex_ident` identifiers in the input stream.
-
-
-In the same way work other functions for finding comments `if stream.startswith('//'):` skipping whitespaces `if stream[0] in [' ', '\n', '\r', '\t']:`
-finding strings `if stream[0] == '"'` and extracts numbers `if stream[0].isdigit():`. The methods lex_number, lex_ident, and lex_block_comment handle specific token types.
-
-
-3. Parse Function: This function takes a string input (the code) and initiates the lexer to tokenize it. It returns the list of tokens generated from the input code.
-```commandline
-def parse(stream):
-    lexer = Lexer()
-    tokens = lexer.lex(stream)
-    return tokens
+        elif rule[i] == "(" and rule[rule.index(")", i) + 1] == "{":
+            for _ in range(int(rule[rule.index("{", i) + 1])):
+                char = choice(options(rule[i+1:rule.index(")", i)]))
+                string += char
+                print(f"Fixed occurrences from options: Adding {char} to string => {string}")
+            i = rule.index("}", i) + 1
 ```
 
-4. Main Block: In the main block, a file named "test.myLang" is opened, its contents are read, and then the parse function is called to tokenize those contents.
-        Finally, the tokens are printed.
-```commandline
-if __name__ == '__main__':
-    file = "test.myLang"
-    contents = open(file, "r").read()
-    tokens = parse(contents)
-    print(tokens)
-```
+Similarly works for other cases such as 0 or more occurrences, 0 or 1 occurrence or just one.
+
 
 ----
 ## Results:
 
 ```commandline
-('Kwd', '#')
-('Ident', 'include')
-('Kwd', '<')
-('Ident', 'stdio')
-('Kwd', '.')
-('Ident', 'h')
-('Kwd', '>')
-('Def',)
-('Ident', 'randomFunction')
-('Kwd', '(')
-('Kwd', ')')
-('Kwd', '{')
-('Ident', 'int')
-('Ident', 'fignea')
-('Kwd', '=')
-('Number', 1.0)
-('Kwd', ';')
-('Ident', 'float')
-('Ident', 'tojeSamoe')
-('Ident', 'if')
-('Ident', 'fignea')
-('Kwd', '>')
-('Ident', 'tojeSamoe')
-('Kwd', '{')
-('Ident', 'printf')
-('Kwd', '(')
-('String', 'Ciota ne to')
-('Kwd', ')')
-('Kwd', ';')
-('Kwd', '}')
-('Kwd', '}')
-('Ident', 'int')
-('Ident', 'main')
-('Kwd', '(')
-('Kwd', ')')
-('Kwd', '{')
-('Ident', 'printf')
-('Kwd', '(')
-('String', 'Hello World!')
-('Kwd', ')')
-('Kwd', ';')
-('Ident', 'return')
-('Number', 0.0)
-('Kwd', ';')
-('Kwd', '}')
+Just one occurrence from options: Adding S to string => S
+Just one occurrence from options: Adding U to string => SU
+Adding W to string => SUW
+Adding Y to string => SUWY
+Adding 2 to string => SUWY2
+Adding U to string => SUWY2U
+Final string:  SUWY2U
+----------------------------------------------------------------------
+Adding L to string => L
+Just one occurrence from options: Adding M to string => LM
+Adding O to string => LMO
+Adding 3 to string => LMO3
+Adding P to string => LMO3P
+Adding Q to string => LMO3PQ
+Just one occurrence from options: Adding 2 to string => LMO3PQ2
+Final string:  LMO3PQ2
+----------------------------------------------------------------------
+Adding R to string => R
+Adding S to string => RS
+Just one occurrence from options: Adding V to string => RSV
+Adding W to string => RSVW
+Fixed occurrences from options: Adding Y to string => RSVWY
+Fixed occurrences from options: Adding Z to string => RSVWYZ
+Final string:  RSVWYZ
+
 ```
 
 ----
 ## Conclusions
 
-During this lab I understood what a lexer is and how it works. It essentially is conversion of a text into 
-meaningful lexical tokens belonging to categories defined by a "lexer" class. In case of a natural language, 
-those categories include nouns, verbs, adjectives, punctuations etc. In case of a programming language, the categories 
-include identifiers, operators, grouping symbols and data types. 
+In conclusion, this lab demonstrates a practical approach to understanding and implementing basic elements of regular expressions through Python code. By defining rules and applying logic for generating strings based on those rules, it provides insight into how regular expressions can be utilized for text generation and manipulation tasks.
 
-I made it so it reads a whole C like document, and it divides each character into a token. It recognizes strings, numbers, 
-individual characters, skips new lines, defined functions, comments and also blocks of comments.
+While this implementation provides a simplified version of regular expression functionality, it offers a hands-on way to comprehend the concepts behind regular expressions and their practical applications in text processing and manipulation. Further enhancements could include expanding the functionality to cover more complex regular expression features and optimizing the code for efficiency and readability.
+
+
+
